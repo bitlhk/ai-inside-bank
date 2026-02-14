@@ -46,7 +46,7 @@ export function FAB() {
       className="absolute bottom-[90px] right-4 w-[52px] h-[52px] rounded-full flex items-center justify-center text-white text-lg z-40 active:scale-90 transition-transform overflow-hidden fab-bounce ai-glow"
       style={{ background: 'linear-gradient(135deg, #2E6BED, #5B8DEF)', boxShadow: '0 4px 20px rgba(46,107,237,0.35)' }}
     >
-      <img src={GXZ_AVATAR} alt="工小智" className="w-full h-full object-cover" />
+      <img src={GXZ_AVATAR} alt="AI助理" className="w-full h-full object-cover" />
     </button>
   );
 }

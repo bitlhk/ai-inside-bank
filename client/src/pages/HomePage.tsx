@@ -3,7 +3,7 @@ import { useApp } from '@/contexts/AppContext';
 import { StatusBar } from '@/components/PhoneShell';
 import { Search, Headphones, MessageSquare, Plus } from 'lucide-react';
 
-// AI建议卡片组件
+// AI建议卡片组件 - 紧凑设计，不遮挡主要功能
 function AICard({ type, children, onClick, onClose, delay = 0 }: {
   type: 'blue' | 'amber' | 'green';
   children: React.ReactNode;
@@ -20,7 +20,7 @@ function AICard({ type, children, onClick, onClose, delay = 0 }: {
 
   return (
     <div
-      className="mx-3 mb-2.5 rounded-xl p-3.5 flex items-start gap-2.5 active:scale-[0.98] active:opacity-90 transition-all duration-200"
+      className="rounded-lg px-2.5 py-2 flex items-start gap-2 active:scale-[0.98] active:opacity-90 transition-all duration-200"
       style={{
         background: s.bg,
         border: `1px solid ${s.border}`,
@@ -30,17 +30,17 @@ function AICard({ type, children, onClick, onClose, delay = 0 }: {
       }}
       onClick={onClick}
     >
-      <div className="w-[30px] h-[30px] rounded-[10px] flex items-center justify-center text-white text-[13px] flex-shrink-0 ai-glow" style={{ background: s.iconBg }}>✦</div>
-      <div className="flex-1">{children}</div>
+      <div className="w-[24px] h-[24px] rounded-[7px] flex items-center justify-center text-white text-[11px] flex-shrink-0 mt-0.5" style={{ background: s.iconBg }}>✦</div>
+      <div className="flex-1 min-w-0">{children}</div>
       {onClose && (
-        <button className="text-gray-400 text-base flex-shrink-0 hover:text-gray-600 transition-colors" onClick={(e) => { e.stopPropagation(); onClose(); }}>×</button>
+        <button className="text-gray-400 text-sm flex-shrink-0 hover:text-gray-600 transition-colors -mt-0.5" onClick={(e) => { e.stopPropagation(); onClose(); }}>×</button>
       )}
     </div>
   );
 }
 
 function AITag({ color, bg, children }: { color: string; bg: string; children: React.ReactNode }) {
-  return <span className="text-[9.5px] font-semibold px-1.5 py-0.5 rounded inline-block mb-1" style={{ color, background: bg }}>{children}</span>;
+  return <span className="text-[9px] font-semibold px-1 py-0.5 rounded inline-block mb-0.5" style={{ color, background: bg }}>{children}</span>;
 }
 
 // 快捷功能格子
@@ -71,7 +71,7 @@ export default function HomePage() {
       <div className="flex items-center px-4 pb-2.5 gap-2.5 flex-shrink-0">
         <span className="text-[13px] text-gray-500">退出</span>
         <div className="flex-1 bg-[#EDEDF0] rounded-[20px] px-3.5 py-2 text-[13px] text-gray-400 flex items-center gap-1.5">
-          <Search size={14} /> 升金有礼
+          <Search size={14} /> 搜索
         </div>
         <Headphones size={18} className="text-gray-600" />
         <div className="relative">
@@ -83,37 +83,34 @@ export default function HomePage() {
 
       {/* 滚动内容区 */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden pb-20 no-scrollbar">
-        {/* AI智能提醒 - 存款到期 */}
-        {showDeposit && (
-          <AICard type="blue" onClick={() => goPage('deposit-plan')} onClose={() => setShowDeposit(false)} delay={0}>
-            <AITag color="#2E6BED" bg="rgba(46,107,237,0.1)">智能提醒</AITag>
-            <div className="text-[13px] text-gray-900 leading-relaxed">
-              您的<b className="text-[#2E6BED] font-semibold">定期存款 20万元</b>将于2月15日到期，届时将自动转为活期。有3款匹配产品可续接。
-            </div>
-            <div className="text-[12px] text-[#2E6BED] mt-1.5 font-medium">查看续接方案 →</div>
-          </AICard>
-        )}
-
-        {/* AI智能提醒 - 信用卡还款 */}
-        {showCC && (
-          <AICard type="amber" onClick={() => goPage('repay')} onClose={() => setShowCC(false)} delay={100}>
-            <AITag color="#D97706" bg="#FFFBEB">还款提醒</AITag>
-            <div className="text-[13px] text-gray-900 leading-relaxed">
-              信用卡本期账单 <b className="text-[#D97706] font-semibold">¥4,328.50</b>，还款日2月18日（还有<b className="text-[#D97706] font-semibold">4天</b>）。
-            </div>
-            <div className="text-[12px] text-[#D97706] mt-1.5 font-medium">一键还款 →</div>
-          </AICard>
-        )}
-
-        {/* AI智能提醒 - 闲置资金 */}
-        {showIdle && (
-          <AICard type="green" onClick={() => goTab('wealth')} onClose={() => setShowIdle(false)} delay={200}>
-            <AITag color="#059669" bg="#ECFDF5">资金洞察</AITag>
-            <div className="text-[13px] text-gray-900 leading-relaxed">
-              活期账户有<b className="text-[#059669] font-semibold">¥4.6万</b>闲置超45天，转入天天盈每月可多赚约<b className="text-[#059669] font-semibold">¥82</b>。
-            </div>
-            <div className="text-[12px] text-[#059669] mt-1.5 font-medium">了解详情 →</div>
-          </AICard>
+        {/* AI智能提醒区域 - 紧凑横向排列 */}
+        {(showDeposit || showCC || showIdle) && (
+          <div className="mx-3 mb-2.5 flex flex-col gap-1.5">
+            {showDeposit && (
+              <AICard type="blue" onClick={() => goPage('deposit-plan')} onClose={() => setShowDeposit(false)} delay={0}>
+                <AITag color="#2E6BED" bg="rgba(46,107,237,0.1)">智能提醒</AITag>
+                <div className="text-[12px] text-gray-900 leading-[1.5]">
+                  <b className="text-[#2E6BED]">定期存款20万</b>明日到期，有3款续接方案 <span className="text-[11px] text-[#2E6BED] font-medium">查看 →</span>
+                </div>
+              </AICard>
+            )}
+            {showCC && (
+              <AICard type="amber" onClick={() => goPage('repay')} onClose={() => setShowCC(false)} delay={100}>
+                <AITag color="#D97706" bg="#FFFBEB">还款提醒</AITag>
+                <div className="text-[12px] text-gray-900 leading-[1.5]">
+                  信用卡账单 <b className="text-[#D97706]">¥4,328.50</b>，还有<b className="text-[#D97706]">4天</b>到期 <span className="text-[11px] text-[#D97706] font-medium">一键还款 →</span>
+                </div>
+              </AICard>
+            )}
+            {showIdle && (
+              <AICard type="green" onClick={() => goTab('wealth')} onClose={() => setShowIdle(false)} delay={200}>
+                <AITag color="#059669" bg="#ECFDF5">资金洞察</AITag>
+                <div className="text-[12px] text-gray-900 leading-[1.5]">
+                  活期<b className="text-[#059669]">¥4.6万</b>闲置超45天，转天天盈月多赚<b className="text-[#059669]">¥82</b> <span className="text-[11px] text-[#059669] font-medium">了解 →</span>
+                </div>
+              </AICard>
+            )}
+          </div>
         )}
 
         {/* 常用功能 */}
@@ -190,9 +187,9 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 工银财富 */}
+        {/* 财富 */}
         <div className="flex justify-between items-center px-4 pt-3.5 pb-2">
-          <span className="text-base font-bold">工银财富</span>
+          <span className="text-base font-bold">财富专区</span>
           <span className="text-[12.5px] text-gray-400">更多</span>
         </div>
         <div className="flex gap-2 px-3 pb-2.5 overflow-x-auto no-scrollbar pt-1.5">

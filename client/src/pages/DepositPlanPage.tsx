@@ -10,7 +10,7 @@ export default function DepositPlanPage() {
 
   const plans = [
     {
-      name: '工银理财·鑫享固收30天',
+      name: '稳享固收30天',
       rate: '2.85%',
       risk: 'R2',
       period: '30天',
@@ -21,7 +21,7 @@ export default function DepositPlanPage() {
       tags: ['推荐', '同类前30%'],
     },
     {
-      name: '工银理财·鑫享增强90天',
+      name: '稳享增强90天',
       rate: '3.15%',
       risk: 'R2',
       period: '90天',

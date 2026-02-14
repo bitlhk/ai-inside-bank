@@ -27,7 +27,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex justify-around text-center pt-2.5 border-t border-gray-100">
               {[
-                { n: '3', l: '银行卡' }, { n: '309', l: '工银i豆' },
+                { n: '3', l: '银行卡' }, { n: '309', l: '积分' },
                 { n: '0', l: '数字藏品' }, { n: '0', l: '礼券' },
               ].map((item, i) => (
                 <div key={i}>

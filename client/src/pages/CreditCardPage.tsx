@@ -24,8 +24,8 @@ export default function CreditCardPage() {
           <div className="absolute inset-0 opacity-10" style={{ background: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3), transparent 60%)' }} />
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-6 h-6 rounded bg-white/20 flex items-center justify-center text-[8px] font-bold">ICBC</div>
-              <h3 className="text-base font-semibold">牡丹超惠卡</h3>
+              <div className="w-6 h-6 rounded bg-white/20 flex items-center justify-center text-[8px] font-bold">BANK</div>
+              <h3 className="text-base font-semibold">尊享白金卡</h3>
             </div>
             <p className="text-[12px] opacity-80 mb-1">5288 **** **** 6677</p>
             <div className="flex justify-between items-end mt-3">
@@ -41,7 +41,7 @@ export default function CreditCardPage() {
             <div className="mt-2 h-1 bg-white/20 rounded-full overflow-hidden">
               <div className="h-full bg-white/60 rounded-full" style={{ width: '8.7%' }} />
             </div>
-            <div className="text-[10px] opacity-60 text-center mt-1.5">真回馈、真减费、真让利</div>
+            <div className="text-[10px] opacity-60 text-center mt-1.5">尊享品质生活</div>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ export default function CreditCardPage() {
               { icon: '🔓', label: '卡片启用' }, { icon: '📱', label: '线上支付' },
               { icon: '🏠', label: '家装分期' }, { icon: '📅', label: '分期付款' },
               { icon: '💰', label: '消费分期' }, { icon: '🎁', label: '卡片权益' },
-              { icon: '📲', label: '一键绑卡' }, { icon: '🛒', label: 'i豆商城' },
+              { icon: '📲', label: '一键绑卡' }, { icon: '🛒', label: '积分商城' },
             ].map((item, i) => (
               <button key={i} className="flex flex-col items-center gap-1 active:opacity-70 active:scale-95 transition-all duration-150">
                 <span className="text-xl w-8 h-8 flex items-center justify-center">{item.icon}</span>

@@ -17,7 +17,8 @@ const FIN_KEYWORDS = [
   '信用卡', '还款', '支出', '收入', '收支', '交易', '到期', '规则', '自动',
   '缴费', '工资', '定期', '活期', '持仓', '资产', '负债', '利率', '收益',
   '分期', '贷款', '汇款', '限额', '扣款', '归集', '留', '买', '天天盈',
-  '鑫享', '货币', '保障', '赵丽华', '妈妈', '母亲', '房东', '陈浩宇'
+  '稳享', '货币', '保障', '赵丽华', '妈妈', '母亲', '房东', '陈浩宇',
+  '零花', '剩余', '每月', '多少', '怎么', '帮我', '设置', '开通'
 ];
 
 const CLOSE_INTENTS = ['暂停', '关闭', '取消', '停止'];
@@ -88,9 +89,9 @@ export function handleLocalQuery(text: string): AIResponse | null {
           title: '理财持仓总览',
           rows: [
             { label: '定期存款', value: '¥200,000 · 2月15日到期' },
-            { label: '工银理财·鑫享固收30天', value: '¥50,000 · 3月1日到期' },
+            { label: '稳享固收30天理财', value: '¥50,000 · 3月1日到期' },
             { label: '天天盈1号(货币基金)', value: '¥32,380.56 · 随时可取' },
-            { label: '工银安盈保障计划', value: '年缴¥12,000 保额¥50万' }
+            { label: '安盈保障计划', value: '年缴¥12,000 保额¥50万' }
           ],
           isInfo: true,
           insight: '定期存款20万将于明天到期，建议提前规划续接。'
@@ -124,7 +125,7 @@ export function handleLocalQuery(text: string): AIResponse | null {
   // 信用卡/账单
   if (text.includes('信用卡') || text.includes('账单')) {
     return {
-      text: `信用卡（牡丹超惠卡 尾号6677）：\n\n本期账单：¥4,328.50\n还款日：2月18日（还有4天）\n额度：¥50,000 已用8.7%`,
+      text: `信用卡（尊享白金卡 尾号6677）：\n\n本期账单：¥4,328.50\n还款日：2月18日（还有4天）\n额度：¥50,000 已用8.7%`,
       cards: [{
         type: 'tx',
         data: {
@@ -139,8 +140,9 @@ export function handleLocalQuery(text: string): AIResponse | null {
     };
   }
 
-  // 余额/账户 (排除"余额留"这种操作型指令)
-  if ((text.includes('余额') && !text.includes('留') && !text.includes('买')) || (text.includes('账户') && !text.includes('买'))) {
+  // 余额/账户 (排除"余额留"、"每月留"这种操作型指令)
+  if ((text.includes('余额') && !text.includes('留') && !text.includes('买') && !text.includes('剩余')) ||
+    (text.includes('账户') && !text.includes('买') && !text.includes('留'))) {
     const total = DB.accounts.reduce((s, a) => s + a.balance, 0) +
       DB.finance.reduce((s, f) => s + ((f as any).amount || 0), 0);
     return {
@@ -168,7 +170,7 @@ export async function callAI(
   // 先尝试本地规则
   if (!isFinanceQuery(text)) {
     return {
-      text: '抱歉，我是您的金融助手工小智，主要为您提供账户查询、消费分析、理财管理、转账设置等金融服务。\n\n您可以试试：\n📊 消费分析\n💰 理财到期查询\n🔍 交易记录\n⚙ 设置自动转账\n💳 信用卡账单',
+      text: '抱歉，我是您的AI金融助理，主要为您提供账户查询、消费分析、理财管理、转账设置等金融服务。\n\n您可以试试：\n📊 消费分析\n💰 理财到期查询\n🔍 交易记录\n⚙ 设置自动转账\n💳 信用卡账单',
       cards: []
     };
   }
@@ -177,9 +179,9 @@ export async function callAI(
   if (localResult) return localResult;
 
   // 需要大模型处理的复杂场景
-  const sys = `你是工商银行手机银行AI助手"工小智"，只处理金融相关问题。非金融问题请拒绝回答。用户数据：${JSON.stringify(DB)}
+  const sys = `你是手机银行AI助理，只处理金融相关问题。非金融问题请拒绝回答。用户数据：${JSON.stringify(DB)}
 回复规则：简洁中文，引用真实数据，不用markdown。设置规则输出===RULE_CARD===JSON===END_CARD===，消费分析输出===ANALYSIS_CARD===JSON===END_CARD===，交易查询输出===TX_CARD===JSON===END_CARD===。JSON格式：RULE_CARD:{"title":"x","rows":[{"label":"x","value":"x"}],"confirmText":"x","isRule":true} ANALYSIS_CARD:{"title":"x","bars":[{"label":"x","value":0,"pct":0,"color":"#xxx"}],"total":{"label":"x","value":"x"},"insight":"x"} TX_CARD:{"title":"x","rows":[{"date":"x","desc":"x","amount":"x"}]}
-重要：当用户说"余额留X，其余买天天盈"这种复杂业务时，你需要：1.理解意图 2.计算具体金额 3.生成规则卡片。例如余额留5000其余买天天盈，活期86520-5000=81520，生成规则卡片操作为"从活期转¥81,520到天天盈"。`;
+重要：当用户说"余额留X，其余买天天盈"或"每月留X零花，剩余买天天盈"这种复杂业务时，你需要：1.理解意图 2.计算具体金额 3.生成规则卡片。例如余额留5000其余买天天盈，活期86520-5000=81520，生成规则卡片操作为"从活期转¥81,520到天天盈"。又如每月留2000零花剩余买天天盈，活期86520-2000=84520，生成规则卡片。`;
 
   try {
     const r = await fetch(AI_CONFIG.url, {
@@ -198,6 +200,10 @@ export async function callAI(
         ]
       })
     });
+
+    if (!r.ok) {
+      throw new Error(`HTTP ${r.status}`);
+    }
 
     const d = await r.json();
     let reply = d.choices?.[0]?.message?.content || '';
@@ -259,7 +265,8 @@ export async function callAI(
       isCloseRule: isClose,
       closeKeyword
     };
-  } catch {
+  } catch (err) {
+    console.error('AI API error:', err);
     // fallback to local
     const local = handleLocalQuery(text);
     if (local) return local;

@@ -61,21 +61,26 @@ function MsgBubble({ msg }: { msg: ChatMsg }) {
 
 // AI思考过程指示器
 function ProcessIndicator({ step }: { step: number }) {
-  const steps = [
-    '正在分析您的请求...',
-    '读取账户数据中...',
-    '调用AI大模型生成方案...',
-    '输出结果'
-  ];
+  const steps = ['理解需求...', '查询数据...', '生成方案...', '准备完成'];
   return (
-    <div className="mx-3 mb-2 bg-[#F0F5FF] border border-[rgba(46,107,237,0.12)] rounded-xl p-3 text-[11.5px] text-[#3A5BA0] animate-slide-up">
-      {steps.map((s, i) => (
-        <div key={i} className={`flex items-center gap-2 py-1 transition-all duration-300 ${i < step ? 'opacity-60' : i === step ? 'opacity-100' : 'opacity-25'}`}>
-          <span className={`w-2.5 h-2.5 rounded-full border-[1.5px] flex-shrink-0 transition-all duration-300 ${i < step ? 'bg-[#10B981] border-[#10B981]' : i === step ? 'bg-[#2E6BED] border-[#2E6BED] ai-pulse' : 'border-[#93B4F5] bg-transparent'}`} />
-          <span className={i < step ? 'line-through' : ''}>{s}</span>
-          {i === step && <span className="ml-auto text-[10px] text-[#2E6BED] animate-pulse">●</span>}
+    <div className="flex gap-2 max-w-[88%] animate-slide-up">
+      <div className="w-[30px] h-[30px] rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden shadow-sm">
+        <img src={GXZ_AVATAR} alt="AI" className="w-full h-full object-cover" />
+      </div>
+      <div className="bg-white border border-gray-100 rounded-[16px] rounded-tl-[4px] shadow-sm px-3.5 py-2.5">
+        <div className="flex items-center gap-2 mb-1.5">
+          <div className="w-3 h-3 border-2 border-[#2E6BED]/30 border-t-[#2E6BED] rounded-full animate-spin" />
+          <span className="text-[12px] text-[#2E6BED] font-medium">AI 正在思考</span>
         </div>
-      ))}
+        <div className="space-y-1">
+          {steps.map((s, i) => (
+            <div key={i} className={`text-[11px] flex items-center gap-1.5 transition-all duration-300 ${i <= step ? 'text-gray-700' : 'text-gray-300'}`}>
+              <span>{i < step ? '✓' : i === step ? '◉' : '○'}</span>
+              <span>{s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -85,110 +90,60 @@ function CardRenderer({ card }: { card: CardData }) {
   const { addRule } = useApp();
   const [confirmed, setConfirmed] = useState(false);
 
-  if (card.type === 'rule' && card.data.isRule) {
-    return (
-      <div className="mx-3 mb-2 rounded-xl border border-[#2E6BED] overflow-hidden animate-slide-up shadow-sm">
-        <div className="bg-gradient-to-r from-[#EFF4FF] to-[#F3EFFF] px-3.5 py-2.5 text-[12.5px] font-semibold text-[#2E6BED] flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#2E6BED] ai-pulse" />
-          📋 {card.data.title}
-        </div>
-        <div className="px-3.5 py-3 bg-white">
-          {card.data.rows.map((r: any, i: number) => (
-            <div key={i} className="flex justify-between py-1.5 text-[12.5px] border-b border-gray-50 last:border-none">
-              <span className="text-gray-500">{r.label}</span>
-              <span className="text-gray-900 font-medium">{r.value}</span>
-            </div>
-          ))}
-        </div>
-        {!confirmed ? (
-          <div className="flex gap-2 px-3.5 py-2.5 border-t border-gray-100 bg-white">
-            <button className="flex-1 py-2.5 rounded-[20px] text-[13.5px] font-medium bg-gray-100 text-gray-500 active:bg-gray-200 transition-colors">修改</button>
-            <button
-              className="flex-1 py-2.5 rounded-[20px] text-[13.5px] font-medium bg-[#2E6BED] text-white active:bg-[#2558C4] transition-colors"
-              onClick={() => {
-                setConfirmed(true);
-                addRule({
-                  id: 'rule-' + Date.now(),
-                  title: card.data.title,
-                  icon: '⚙',
-                  status: 'running',
-                  rows: card.data.rows,
-                });
-              }}
-            >
-              {card.data.confirmText || '确认开启'}
-            </button>
-          </div>
-        ) : (
-          <div className="px-3.5 py-2.5 border-t border-gray-100 text-center text-[13px] text-[#10B981] font-medium bg-[#ECFDF5]">✓ 已开启，可在「自动规则」中管理</div>
-        )}
-      </div>
-    );
-  }
-
-  if (card.type === 'rule' && card.data.isInfo) {
-    return (
-      <div className="mx-3 mb-2 rounded-xl border border-gray-200 overflow-hidden animate-slide-up shadow-sm">
-        <div className="px-3.5 py-2.5 text-[12.5px] font-semibold text-[#C41230] bg-gradient-to-r from-[#FFF5F0] to-[#FFF0F0]">💰 {card.data.title}</div>
-        <div className="px-3.5 py-3 bg-white">
-          {card.data.rows.map((r: any, i: number) => (
-            <div key={i} className="flex justify-between py-1.5 text-[12.5px] border-b border-gray-50 last:border-none">
-              <span className="text-gray-500">{r.label}</span>
-              <span className="text-gray-900 font-medium">{r.value}</span>
-            </div>
-          ))}
-          {card.data.insight && (
-            <div className="mt-2.5 p-2.5 bg-[#F0F5FF] rounded-lg text-[12px] text-[#3A5BA0] leading-relaxed flex gap-1.5">
-              <span>✦</span><span>{card.data.insight}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
+  const handleConfirm = () => {
+    if (card.data.isRule && card.data.confirmText) {
+      addRule({
+        id: 'rule-' + Date.now(),
+        title: card.data.title,
+        icon: '⚙',
+        status: 'running',
+        rows: card.data.rows
+      });
+      setConfirmed(true);
+    }
+  };
 
   if (card.type === 'analysis') {
     return (
-      <div className="mx-3 mb-2 rounded-xl border border-gray-200 overflow-hidden animate-slide-up shadow-sm">
-        <div className="bg-gray-50 px-3.5 py-2.5 text-[12.5px] font-semibold text-gray-900 flex items-center gap-1.5">📊 {card.data.title}</div>
-        <div className="px-3.5 py-3 bg-white">
-          {card.data.bars?.map((b: any, i: number) => (
-            <div key={i} className="flex items-center gap-2 mb-2.5">
-              <span className="text-[12px] text-gray-500 w-[55px] flex-shrink-0">{b.label}</span>
-              <div className="flex-1 h-[18px] bg-gray-100 rounded-[9px] overflow-hidden">
-                <div className="h-full rounded-[9px] flex items-center justify-end pr-1.5 text-[9px] text-white font-semibold animate-progress-fill" style={{ width: `${b.pct}%`, background: b.color, minWidth: '30px' }}>{b.pct}%</div>
+      <div className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 animate-slide-up max-w-[92%]">
+        <h4 className="text-[13px] font-semibold mb-2.5 text-gray-900">{card.data.title}</h4>
+        <div className="space-y-2 mb-2.5">
+          {card.data.bars?.map((bar: any, i: number) => (
+            <div key={i} className="flex items-center gap-2">
+              <span className="text-[11px] text-gray-500 w-8 flex-shrink-0">{bar.label}</span>
+              <div className="flex-1 h-[14px] bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full rounded-full animate-progress-fill" style={{ width: `${bar.pct}%`, background: bar.color }} />
               </div>
-              <span className="text-[11px] text-gray-900 font-semibold w-[60px] text-right flex-shrink-0">¥{Number(b.value).toLocaleString()}</span>
+              <span className="text-[11px] font-medium text-gray-700 w-14 text-right">¥{bar.value?.toLocaleString()}</span>
             </div>
           ))}
-          {card.data.total && (
-            <div className="flex justify-between pt-2.5 border-t border-gray-100 mt-1.5 text-[13px]">
-              <span className="text-gray-500">{card.data.total.label}</span>
-              <span className="font-bold">{card.data.total.value}</span>
-            </div>
-          )}
-          {card.data.insight && (
-            <div className="mt-2.5 p-2.5 bg-[#F0F5FF] rounded-lg text-[12px] text-[#3A5BA0] leading-relaxed flex gap-1.5">
-              <span>✦</span><span>{card.data.insight}</span>
-            </div>
-          )}
         </div>
+        <div className="flex justify-between text-[12px] pt-2 border-t border-gray-100">
+          <span className="text-gray-500">{card.data.total?.label}</span>
+          <span className="font-bold text-gray-900">{card.data.total?.value}</span>
+        </div>
+        {card.data.insight && (
+          <div className="mt-2 p-2 bg-[#F0F5FF] rounded-lg text-[11px] text-[#3A5BA0] leading-relaxed flex gap-1.5">
+            <span className="ai-pulse flex-shrink-0">✦</span>
+            <span>{card.data.insight}</span>
+          </div>
+        )}
       </div>
     );
   }
 
   if (card.type === 'tx') {
     return (
-      <div className="mx-3 mb-2 rounded-xl border border-gray-200 overflow-hidden animate-slide-up shadow-sm">
-        <div className="bg-gray-50 px-3.5 py-2.5 text-[12.5px] font-semibold text-gray-900 flex items-center gap-1.5">📋 {card.data.title}</div>
-        <div className="px-3.5 py-2 bg-white">
-          {card.data.rows?.map((r: any, i: number) => (
-            <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-none text-[12.5px]">
+      <div className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 animate-slide-up max-w-[92%]">
+        <h4 className="text-[13px] font-semibold mb-2 text-gray-900">{card.data.title}</h4>
+        <div className="space-y-0">
+          {card.data.rows?.map((row: any, i: number) => (
+            <div key={i} className="flex justify-between py-1.5 border-b border-gray-50 last:border-none text-[11.5px]">
               <div>
-                <div className="font-medium text-gray-900">{r.desc}</div>
-                <div className="text-[11px] text-gray-400 mt-0.5">{r.date}</div>
+                <div className="text-gray-800">{row.desc}</div>
+                <div className="text-[10px] text-gray-400">{row.date}</div>
               </div>
-              <div className={`font-semibold ${String(r.amount).includes('-') ? 'text-[#C41230]' : 'text-[#10B981]'}`}>{r.amount}</div>
+              <span className="font-medium text-gray-900">{row.amount}</span>
             </div>
           ))}
         </div>
@@ -196,7 +151,40 @@ function CardRenderer({ card }: { card: CardData }) {
     );
   }
 
-  return null;
+  // rule card
+  return (
+    <div className="bg-white rounded-xl p-3.5 shadow-sm border border-gray-100 animate-slide-up max-w-[92%]">
+      <h4 className="text-[13px] font-semibold mb-2 text-gray-900">{card.data.title}</h4>
+      <div className="space-y-0">
+        {card.data.rows?.map((row: any, i: number) => (
+          <div key={i} className="flex justify-between py-1.5 border-b border-gray-50 last:border-none text-[12px]">
+            <span className="text-gray-500">{row.label}</span>
+            <span className="font-medium text-gray-900">{row.value}</span>
+          </div>
+        ))}
+      </div>
+      {card.data.insight && (
+        <div className="mt-2 p-2 bg-[#F0F5FF] rounded-lg text-[11px] text-[#3A5BA0] leading-relaxed flex gap-1.5">
+          <span className="ai-pulse flex-shrink-0">✦</span>
+          <span>{card.data.insight}</span>
+        </div>
+      )}
+      {card.data.confirmText && !card.data.isInfo && (
+        confirmed ? (
+          <div className="mt-2.5 text-center text-[12px] text-[#10B981] font-medium py-2 bg-[#ECFDF5] rounded-xl">
+            ✓ 已确认，规则已添加到「自动规则」
+          </div>
+        ) : (
+          <button
+            onClick={handleConfirm}
+            className="w-full mt-2.5 py-2 rounded-xl bg-[#2E6BED] text-white text-[13px] font-medium active:opacity-85 active:scale-[0.98] transition-all shadow-sm"
+          >
+            {card.data.confirmText}
+          </button>
+        )
+      )}
+    </div>
+  );
 }
 
 // 记忆Tab
@@ -373,7 +361,7 @@ export default function GxzPage() {
         <StatusBar />
         <div className="flex items-center px-4 pb-2.5 gap-2.5">
           <button className="text-[22px] text-gray-700 active:opacity-60 transition-opacity" onClick={goBack}>‹</button>
-          <span className="flex-1 text-center text-[17px] font-semibold">工小智</span>
+          <span className="flex-1 text-center text-[17px] font-semibold">AI助理</span>
           <span className="text-lg">🔊</span>
           <span className="text-lg">⋯</span>
         </div>
@@ -403,7 +391,7 @@ export default function GxzPage() {
             <AIKnownPanel />
             {messages.length === 0 && (
               <div className="text-center text-gray-400 text-[12px] py-4 animate-fade-in">
-                👋 您好！我是工小智，您的AI金融助手。
+                👋 您好！我是AI助理，您的智能金融助手。
                 <br />试试点击下方快捷按钮或直接输入问题。
               </div>
             )}

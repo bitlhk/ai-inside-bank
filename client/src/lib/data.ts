@@ -1,14 +1,14 @@
-// 工行手机银行 AI Inside Demo - 数据模型
+// 手机银行 AI Inside Demo - 数据模型
 // 模拟客户真实持仓、存款、理财、余额信息
 
 export const DB = {
   user: { name: "李泓锟", level: "三星级" },
   accounts: [
-    { type: "活期", number: "6222****8862", balance: 86520, bank: "工商银行" },
-    { type: "定期", number: "6222****8863", balance: 200000, bank: "工商银行", maturityDate: "2026-02-15", rate: "2.15%" }
+    { type: "活期", number: "6222****8862", balance: 86520, bank: "银行" },
+    { type: "定期", number: "6222****8863", balance: 200000, bank: "银行", maturityDate: "2026-02-15", rate: "2.15%" }
   ],
   creditCard: {
-    name: "牡丹超惠卡",
+    name: "尊享白金卡",
     number: "5288****6677",
     limit: 50000,
     used: 4328.50,
@@ -27,17 +27,17 @@ export const DB = {
     ]
   },
   finance: [
-    { name: "工银理财·鑫享固收30天", amount: 50000, rate: "2.85%", risk: "R2", gain: 286.4, maturity: "2026-03-01", type: "理财" },
+    { name: "稳享固收30天理财", amount: 50000, rate: "2.85%", risk: "R2", gain: 286.4, maturity: "2026-03-01", type: "理财" },
     { name: "天天盈1号(货币基金)", amount: 32380.56, rate: "2.15%", risk: "R1", gain: 12.35, maturity: null, type: "基金" },
-    { name: "工银安盈保障计划", annualPay: 12000, coverage: 500000, nextPay: "2026-05-01", type: "保险" }
+    { name: "安盈保障计划", annualPay: 12000, coverage: 500000, nextPay: "2026-05-01", type: "保险" }
   ],
   transfers: [
-    { date: "2026-01-28", to: "陈浩宇(同事)", bank: "工商银行", amount: 300, acct: "6222****1188" },
+    { date: "2026-01-28", to: "陈浩宇(同事)", bank: "银行", amount: 300, acct: "6222****1188" },
     { date: "2026-01-15", to: "赵丽华(母亲)", bank: "建设银行", amount: 2000, acct: "6217****2303" },
     { date: "2026-01-10", to: "李泓锟", bank: "华夏银行", amount: 10000, acct: "6230****9540" },
     { date: "2025-12-15", to: "赵丽华(母亲)", bank: "建设银行", amount: 2000, acct: "6217****2303" },
     { date: "2025-12-10", to: "刘先生(房东)", bank: "中国银行", amount: 4500, acct: "6216****3350" },
-    { date: "2025-12-05", to: "陈浩宇(同事)", bank: "工商银行", amount: 500, acct: "6222****1188" },
+    { date: "2025-12-05", to: "陈浩宇(同事)", bank: "银行", amount: 500, acct: "6222****1188" },
     { date: "2025-11-15", to: "赵丽华(母亲)", bank: "建设银行", amount: 2000, acct: "6217****2303" },
     { date: "2025-11-10", to: "刘先生(房东)", bank: "中国银行", amount: 4500, acct: "6216****3350" }
   ],
@@ -45,7 +45,7 @@ export const DB = {
     { name: "赵丽华", relation: "母亲", bank: "建设银行", acct: "6217****2303", initial: "赵", color: "#2E7BC8" },
     { name: "李泓锟", relation: "", bank: "华夏银行", acct: "6230****9540", initial: "李", color: "#C41230" },
     { name: "李泓锟", relation: "", bank: "中国银行", acct: "6217****7335", initial: "李", color: "#C41230" },
-    { name: "陈浩宇", relation: "同事", bank: "工商银行", acct: "6222****1188", initial: "陈", color: "#E8394A" },
+    { name: "陈浩宇", relation: "同事", bank: "银行", acct: "6222****1188", initial: "陈", color: "#E8394A" },
     { name: "刘先生", relation: "房东", bank: "中国银行", acct: "6216****3350", initial: "刘", color: "#666" }
   ],
   expense: {
@@ -103,9 +103,9 @@ export const defaultRules: AutoRule[] = [
   }
 ];
 
-// AI API 配置
+// AI API 配置 - 使用代理路径避免CORS
 export const AI_CONFIG = {
-  url: "https://api.modelarts-maas.com/v2/chat/completions",
+  url: "/api/ai/chat/completions",
   key: "i0tyooAdw2LdT4YQXTSdQFiHRTm9X_BunE9Olh4niYAZDO4OjXcGbkNArJl6MynU88U7lihpIhOOgShih0eJMA",
   model: "DeepSeek-V3"
 };

@@ -66,10 +66,10 @@ export default function RepayPage() {
               <label className="text-[11px] text-gray-400 mb-1 block">还款卡号</label>
               <div className="bg-[#F8F8FA] rounded-xl p-3 flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: 'linear-gradient(135deg, #C41230, #E8394A)' }}>
-                  <span className="text-white font-bold text-[10px]">工行</span>
+                  <span className="text-white font-bold text-[10px]">BANK</span>
                 </div>
                 <div>
-                  <div className="text-[13px] font-medium text-gray-900">牡丹超惠卡</div>
+                  <div className="text-[13px] font-medium text-gray-900">尊享白金卡</div>
                   <div className="text-[11px] text-gray-400">5288****6677</div>
                 </div>
               </div>
@@ -88,7 +88,7 @@ export default function RepayPage() {
               <div className="bg-[#F8F8FA] rounded-xl p-3 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{ background: 'linear-gradient(135deg, #C41230, #E8394A)' }}>
-                    <span className="text-white font-bold text-[10px]">工行</span>
+                    <span className="text-white font-bold text-[10px]">BANK</span>
                   </div>
                   <div>
                     <div className="text-[13px] font-medium text-gray-900">活期储蓄账户</div>

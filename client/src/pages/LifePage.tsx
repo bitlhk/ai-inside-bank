@@ -21,7 +21,7 @@ export default function LifePage() {
           <div className="absolute inset-0 opacity-10" style={{ background: 'radial-gradient(circle at 90% 30%, rgba(255,255,255,0.4), transparent 60%)' }} />
           <div className="relative z-10">
             <h3 className="text-lg font-bold mb-1">老友出行 选携程</h3>
-            <p className="text-[12px] opacity-85">来老友会 享工行支付优惠</p>
+            <p className="text-[12px] opacity-85">来老友会 享支付优惠</p>
           </div>
         </div>
 
@@ -42,9 +42,9 @@ export default function LifePage() {
         <div className="bg-white mx-3 mb-2.5 rounded-2xl p-3 shadow-sm">
           <div className="grid grid-cols-5 gap-y-2.5">
             {[
-              { icon: '🎁', label: 'i豆乐园' }, { icon: '🎉', label: '悦享生活' },
+              { icon: '🎁', label: '积分乐园' }, { icon: '🎉', label: '悦享生活' },
               { icon: '👑', label: '权益中心' }, { icon: '🏪', label: '百城万店' },
-              { icon: '🛒', label: 'i豆商城' }, { icon: '📱', label: '生活缴费' },
+              { icon: '🛒', label: '积分商城' }, { icon: '📱', label: '生活缴费' },
               { icon: '📦', label: '快递专区' }, { icon: '📄', label: '资信助手' },
               { icon: '💼', label: '企业年金' }, { icon: '🏠', label: '查房价' },
             ].map((item, i) => (

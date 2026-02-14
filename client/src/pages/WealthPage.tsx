@@ -69,9 +69,9 @@ export default function WealthPage() {
         {/* 持仓列表 */}
         <div className="stagger-children">
           {[
-            { name: '工银理财·鑫享固收30天', gain: '+¥286.40', tags: ['持有 50,000元', 'R2'], ai: '将于3月1日到期，届时可续接或转出' },
+            { name: '稳享固收30天', gain: '+¥286.40', tags: ['持有 50,000元', 'R2'], ai: '将于3月1日到期，届时可续接或转出' },
             { name: '天天盈1号 (货币基金)', gain: '+¥12.35', tags: ['持有 32,380.56元', 'R1'], ai: '灵活存取，七日年化2.15%' },
-            { name: '工银安盈保障计划', gain: '保障中', gainColor: '#10B981', tags: ['年缴 12,000元', '保额50万'], ai: '下次缴费 2026年5月，保障至2046年' },
+            { name: '安盈保障计划', gain: '保障中', gainColor: '#10B981', tags: ['年缴 12,000元', '保额50万'], ai: '下次缴费 2026年5月，保障至2046年' },
           ].map((item, i) => (
             <div key={i} className="bg-white mx-3 mb-2 rounded-xl p-3.5 shadow-sm">
               <div className="flex justify-between items-center">
@@ -109,7 +109,7 @@ export default function WealthPage() {
               <div className="text-[24px] font-bold text-[#C41230]">2.47<small className="text-[11px] font-normal">%</small></div>
               <div className="text-[10.5px] text-gray-400">成立以来年化</div>
             </div>
-            <div className="text-[13px] font-medium max-w-[190px] text-right leading-snug text-gray-900">工银理财·核心优选ESG最短持有60天</div>
+            <div className="text-[13px] font-medium max-w-[190px] text-right leading-snug text-gray-900">核心优选ESG最短持有60天</div>
           </div>
           <div className="flex gap-1.5 mt-1.5 mb-2.5">
             <span className="text-[10px] text-gray-500 bg-[#F5F5F5] px-1.5 py-0.5 rounded">1元起购</span>
