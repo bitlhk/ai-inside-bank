@@ -12,6 +12,88 @@ export interface AIResponse {
   closeKeyword?: string;
 }
 
+
+// ------------------------
+// Network robustness helpers (timeout + retry)
+// ------------------------
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Retry only on transient failures (network/AbortError, 408/429/5xx).
+ */
+async function fetchWithRetry(url: string, options: RequestInit, timeoutMs: number) {
+  const retries = 2;
+  let lastErr: unknown = null;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetchWithTimeout(url, options, timeoutMs);
+
+      if ([408, 429, 500, 502, 503, 504].includes(res.status) && attempt < retries) {
+        await sleep(500 * Math.pow(2, attempt));
+        continue;
+      }
+      return res;
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await sleep(500 * Math.pow(2, attempt));
+        continue;
+      }
+      throw lastErr;
+    }
+  }
+
+  throw lastErr;
+}
+
+// Reduce prompt size: don't blindly serialize the entire DB for every call.
+function compactDB() {
+  const db: any = DB as any;
+  return {
+    user: db.user,
+    accounts: Array.isArray(db.accounts)
+      ? db.accounts.map((a: any) => ({
+          type: a.type,
+          name: a.name,
+          balance: a.balance,
+          currency: a.currency,
+          maturityDate: a.maturityDate,
+        }))
+      : db.accounts,
+    finance: Array.isArray(db.finance)
+      ? db.finance.map((f: any) => ({
+          name: f.name,
+          amount: f.amount,
+          type: f.type,
+          maturity: f.maturity,
+          maturityDate: f.maturityDate,
+          status: f.status,
+        }))
+      : db.finance,
+    creditCard: db.creditCard
+      ? {
+          used: db.creditCard.used,
+          limit: db.creditCard.limit,
+          billDate: db.creditCard.billDate,
+          dueDate: db.creditCard.dueDate,
+        }
+      : db.creditCard,
+  };
+}
+
 const FIN_KEYWORDS = [
   '消费', '账单', '转账', '理财', '存款', '余额', '账户', '基金', '保险',
   '信用卡', '还款', '支出', '收入', '收支', '交易', '到期', '规则', '自动',
@@ -179,33 +261,39 @@ export async function callAI(
   if (localResult) return localResult;
 
   // 需要大模型处理的复杂场景
-  const sys = `你是手机银行AI助理，只处理金融相关问题。非金融问题请拒绝回答。用户数据：${JSON.stringify(DB)}
+  const sys = `你是手机银行AI助理，只处理金融相关问题。非金融问题请拒绝回答。用户数据：${JSON.stringify(compactDB())}
 回复规则：简洁中文，引用真实数据，不用markdown。设置规则输出===RULE_CARD===JSON===END_CARD===，消费分析输出===ANALYSIS_CARD===JSON===END_CARD===，交易查询输出===TX_CARD===JSON===END_CARD===。JSON格式：RULE_CARD:{"title":"x","rows":[{"label":"x","value":"x"}],"confirmText":"x","isRule":true} ANALYSIS_CARD:{"title":"x","bars":[{"label":"x","value":0,"pct":0,"color":"#xxx"}],"total":{"label":"x","value":"x"},"insight":"x"} TX_CARD:{"title":"x","rows":[{"date":"x","desc":"x","amount":"x"}]}
 重要：当用户说"余额留X，其余买天天盈"或"每月留X零花，剩余买天天盈"这种复杂业务时，你需要：1.理解意图 2.计算具体金额 3.生成规则卡片。例如余额留5000其余买天天盈，活期86520-5000=81520，生成规则卡片操作为"从活期转¥81,520到天天盈"。又如每月留2000零花剩余买天天盈，活期86520-2000=84520，生成规则卡片。`;
 
   try {
-    const r = await fetch(AI_CONFIG.url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${AI_CONFIG.key}`
+    const r = await fetchWithRetry(
+      AI_CONFIG.url,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${AI_CONFIG.key}`
+        },
+        body: JSON.stringify({
+          model: AI_CONFIG.model,
+          max_tokens: 1000,
+          messages: [
+            { role: "system", content: sys },
+            ...chatHistory.slice(-16),
+            { role: "user", content: text }
+          ]
+        })
       },
-      body: JSON.stringify({
-        model: AI_CONFIG.model,
-        max_tokens: 1000,
-        messages: [
-          { role: "system", content: sys },
-          ...chatHistory.slice(-16),
-          { role: "user", content: text }
-        ]
-      })
-    });
+      30000
+    );
+
+    const raw = await r.text();
 
     if (!r.ok) {
-      throw new Error(`HTTP ${r.status}`);
+      throw new Error(`HTTP ${r.status}: ${raw.slice(0, 200)}`);
     }
 
-    const d = await r.json();
+    const d = JSON.parse(raw);
     let reply = d.choices?.[0]?.message?.content || '';
 
     if (!reply) {
@@ -265,7 +353,8 @@ export async function callAI(
       isCloseRule: isClose,
       closeKeyword
     };
-  } catch (err) {
+  } catch (err: any) {
+    console.warn('AI request failed:', err?.message || err);
     console.error('AI API error:', err);
     // fallback to local
     const local = handleLocalQuery(text);
