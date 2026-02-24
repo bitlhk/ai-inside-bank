@@ -186,6 +186,8 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path: string) => path.replace(/^\/api\/ai/, '/v2'),
         secure: true,
+        timeout: 60000,
+        proxyTimeout: 60000,
       },
     },
     fs: {
